@@ -22,8 +22,6 @@
 //
 // Google Chrome - Version 86.0.4240.193 (Official Build) (64-bit)
 //
-
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -41,8 +39,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include <stdbool.h>
 #include <string.h>
@@ -56,6 +52,7 @@ VL53L0X_Dev_t Dev =
   .I2cDevAddr = PROXIMITY_I2C_ADDRESS
 };
 
+// WIFI SSID and Password
 #define SSID     "SSID_GOES_HERE"
 #define PASSWORD "SSID_PASSWORD_GOES_HERE"
 #define PORT           80
@@ -121,18 +118,29 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
 
+  // Initialize the UART for serial communication 
   MX_USART1_UART_Init();
-  /* USER CODE BEGIN 2 */
 
+  // Initialize the ToF sensor
   VL53L0X_PROXIMITY_Init();
 
+  // Use the BSP library to initialize LED2
   BSP_LED_Init(LED2);
-  //BSP_LED_Init(LED1);
+  
+  // Use the BSP library to initialize the temperature sensor
   BSP_TSENSOR_Init();
 
+  // Initialize timer 16 (used for blinking the LED)
+  // Currently set to blink once per 2s
   MX_TIM16_Init();
+  
+  // Starts the timer
   HAL_TIM_Base_Start(&htim16);
+  
+  // Enables the timer to trigger interrupts 
   __HAL_TIM_ENABLE_IT(&htim16, TIM_IT_UPDATE );
+  
+  // Just print a nice banner for starting the WIFI server 
   serialPrint("****** WIFI Web Server Start****** \n\r");
 
   wifi_server();
@@ -219,7 +227,6 @@ else
 }
 return 0;
 }
-
 
 int wifi_server(void)
 {
@@ -449,7 +456,6 @@ char fenceMes[50] = {0};
 
 uint16_t SentDataLength;
 WIFI_Status_t ret;
-
 
 // construct web page content
 strcpy((char *)http, (char *)"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nPragma: no-cache\r\n\r\n");
